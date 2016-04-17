@@ -56,11 +56,17 @@ let packDMG = (path) => {
 
 let packZIP = (path) => {
     let pathInfo = Path.parse(path),
-        cmd = isWindows
-            ? `${get7zPath()} a ${pathInfo.base} ${pathInfo.base}.zip`
-            : `zip -r ${pathInfo.base}.zip ${pathInfo.base}`;
+        cmd = (isWindows
+            ? `${get7zPath()} a`
+            : 'zip -r')
+            + ` ${pathInfo.base}.zip ${pathInfo.base}`,
+        params = { };
 
-    exec()(cmd, { cwd: pathInfo.dir });
+    if (pathInfo.dir) {
+        params.cwd = pathInfo.dir;
+    }
+
+    exec()(cmd, params);
     log(`ZIP archive created: "${path}.zip"`);
 };
 
