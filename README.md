@@ -26,7 +26,8 @@ Pack.path(dir);
 
 * `dmg` `boolean|RegEx`, check to pack into DMG instead of ZIP.
 * `dmgFormat` `string`, the `hdiutil -format` parameter value ([docs](https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/hdiutil.1.html)).
-* `silent` `boolean`, will write only Errors to console.
+* `isSilent` `boolean`, `false`, will write only Errors to console.
+* `isSync` `boolean`, `true`, synchronous packaging.
 
 ## Credits
 
