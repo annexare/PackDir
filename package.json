@@ -4,6 +4,7 @@
     "description": "Pack specified directory with native current OS command line tools.",
     "keywords": [
         "pack",
+        "directory",
         "utility",
         "dmg",
         "zip",

@@ -4,11 +4,13 @@ Pack specified directory with native current OS command line tools.
 
 Main purpose was to pack the OS X/Windows Electron app,
 so Linux was not tested yet.
-
+<br>
 By default, if specified `path` has a `darwin` in it's name,
 the directory will be packed as DMG under OS X.
 
 ## Usage
+
+Get the package via NPM: `npm install pack-dir`.
 
 ```js
 const Pack = require('pack-dir');
