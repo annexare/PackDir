@@ -1,0 +1,31 @@
+{
+    "name": "pack-dir",
+    "version": "0.1.0",
+    "description": "Pack specified directory with native current OS command line tools.",
+    "keywords": [
+        "pack",
+        "utility",
+        "dmg",
+        "zip",
+        "Annexare"
+    ],
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/annexare/PackDir.git"
+    },
+    "dependencies": {},
+    "devDependencies": {},
+    "author": {
+        "name": "Dmytro",
+        "email": "z@annexare.com",
+        "url": "https://github.com/z-ax"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/annexare/PackDir/issues"
+    },
+    "engines": {
+        "node": ">=5.10.0"
+    }
+}
