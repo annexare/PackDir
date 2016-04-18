@@ -50,7 +50,7 @@ let log = (message) => {
 };
 
 let packDMG = (path) => {
-    exec()(`hdiutil create -format ${options.dmgFormat} -srcfolder ${path} ${path}.dmg`);
+    exec()(`hdiutil create -format ${options.dmgFormat} -srcfolder "${path}" "${path}.dmg"`);
     log(`DMG file created: "${path}.dmg"`);
 };
 
@@ -59,7 +59,7 @@ let packZIP = (path) => {
         cmd = (isWindows
             ? `${get7zPath()} a`
             : 'zip -r')
-            + ` ${pathInfo.base}.zip ${pathInfo.base}`,
+            + ` "${pathInfo.base}.zip" "${pathInfo.base}"`,
         params = { };
 
     if (pathInfo.dir) {
