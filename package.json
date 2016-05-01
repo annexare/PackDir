@@ -15,8 +15,13 @@
         "type": "git",
         "url": "https://github.com/annexare/PackDir.git"
     },
+    "scripts": {
+        "test": "jest"
+    },
     "dependencies": {},
-    "devDependencies": {},
+    "devDependencies": {
+        "jest-cli": "^12.0.2"
+    },
     "author": {
         "name": "Dmytro",
         "email": "z@annexare.com",
@@ -28,5 +33,15 @@
     },
     "engines": {
         "node": ">=5.10.0"
+    },
+    "jest": {
+        "collectCoverage": true,
+        "collectCoverageOnlyFrom": {
+            "index.js": true
+        },
+        "testDirectoryName": "tests",
+        "testPathDirs": [
+            "."
+        ]
     }
 }

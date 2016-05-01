@@ -4,93 +4,110 @@ const Path = require('path'),
     isOSX = (process.platform === 'darwin'),
     isWindows = (process.platform === 'win32');
 
-let options = {
-    dmg: /darwin/,
-    dmgFormat: 'UDZO',
-    isSilent: false,
-    isSync: true
-};
+class PackDir {
+    constructor() {
+        this.params = {
+            dmg: /darwin/,
+            dmgFormat: 'UDZO',
+            isSilent: false,
+            isSync: true
+        };
 
-let setParam = (param, value) => {
-    if (!options.hasOwnProperty(param)) {
-        return false;
+        this.DMG = '.dmg';
+        this.ZIP = '.zip';
     }
 
-    return options[param] = value
-};
+    asDMG(path) {
+        if (!isOSX || !this.params.dmg) {
+            // Impossible to pack as DMG, or disabled
+            return false;
+        }
+        if (this.params.dmg instanceof RegExp) {
+            return this.params.dmg.test(path);
+        }
 
-let asDMG = (path) => {
-    if (!isOSX || !options.dmg) {
-        // Impossible to pack as DMG, or disabled
-        return false;
-    }
-    if (options.dmg instanceof RegExp) {
-        return options.dmg.test(path);
-    }
-
-    return !!options.dmg;
-};
-
-let exec = () => {
-    return options.isSync
-        ? require('child_process').execSync
-        : require('child_process').exec;
-};
-
-let get7zPath = () => {
-    return Path.normalize(__dirname + '/7z/7za.exe');
-};
-
-let log = (message) => {
-    if (options.isSilent) {
-        return;
+        return !!this.params.dmg;
     }
 
-    console.log(message + "\n");
-};
+    dmg(path) {
+        let fileName = path + this.DMG;
 
-let packDMG = (path) => {
-    exec()(`hdiutil create -format ${options.dmgFormat} -srcfolder "${path}" "${path}.dmg"`);
-    log(`DMG file created: "${path}.dmg"`);
-};
-
-let packZIP = (path) => {
-    let pathInfo = Path.parse(path),
-        cmd = (isWindows
-            ? `${get7zPath()} a`
-            : 'zip -r')
-            + ` "${pathInfo.base}.zip" "${pathInfo.base}"`,
-        params = { };
-
-    if (pathInfo.dir) {
-        params.cwd = pathInfo.dir;
+        this.exec()(`hdiutil create -format ${this.params.dmgFormat} -srcfolder "${path}" "${fileName}"`);
+        this.log(`DMG file created: "${fileName}"`);
     }
 
-    exec()(cmd, params);
-    log(`ZIP archive created: "${path}.zip"`);
-};
-
-let pack = (path) => {
-    if (Array.isArray(path)) {
-        // Recursive packing for Array of paths
-        path.forEach(path => pack(path));
-
-        return true;
+    exec() {
+        return this.params.isSync
+            ? require('child_process').execSync
+            : require('child_process').exec;
     }
 
-    try {
-        if (asDMG(path)) {
-            packDMG(path);
-        } else {
-            packZIP(path);
+    extractTo(path) {
+        this.log(`TODO: Extract to "${path}"`);
+    }
+
+    fromPath(path) {
+        if (Array.isArray(path)) {
+            // Recursive packing for Array of paths
+            path.forEach(path => {
+                this.fromPath(path);
+            });
+
+            return true;
+        }
+
+        try {
+            if (this.asDMG(path)) {
+                this.dmg(path);
+            } else {
+                this.zip(path);
+            }
+        }
+        catch (e) {
+            console.error(`Error while packaging "${path}":`, e.message);
         }
     }
-    catch (e) {
-        console.error(`Error while packaging "${path}":`, e.message);
-    }
-};
 
-module.exports = {
-    path: pack,
-    param: setParam
-};
+    getZipPath() {
+        return Path.normalize(__dirname + '/zip/zip.exe');
+    }
+
+    log(message) {
+        if (this.params.isSilent) {
+            return;
+        }
+
+        console.log(message);
+    }
+
+    param(name, value) {
+        if (!this.params.hasOwnProperty(name)) {
+            return null;
+        }
+
+        if (typeof value === 'undefined') {
+            return this.params[name];
+        }
+
+        return this.params[name] = value;
+    }
+
+    zip(path) {
+        let fileName = path + this.ZIP,
+            pathInfo = Path.parse(path),
+            cmd = (isWindows
+                    ? `${this.getZipPath()} -r`
+                    : 'zip -r')
+                + ` "${pathInfo.base}.zip" "${pathInfo.base}"`,
+            params = {};
+
+        if (pathInfo.dir) {
+            params.cwd = pathInfo.dir;
+        }
+
+        this.exec()(cmd, params);
+        this.log(`ZIP archive created: "${fileName}"`);
+    }
+}
+
+module.exports = new PackDir();
