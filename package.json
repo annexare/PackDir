@@ -1,13 +1,14 @@
 {
     "name": "pack-dir",
-    "version": "0.1.1",
-    "description": "Pack specified directory with native current OS command line tools.",
+    "version": "0.2.0",
+    "description": "Pack/unpack specified directory with native current OS command line tools.",
     "keywords": [
         "pack",
         "directory",
         "utility",
         "dmg",
         "zip",
+        "archive",
         "Annexare"
     ],
     "main": "index.js",
