@@ -1,13 +1,13 @@
 # PackDir
+
 [![Travis CI](https://api.travis-ci.org/annexare/PackDir.svg "Travis CI")](https://travis-ci.org/annexare/PackDir)
 [![AppVeyor CI](https://ci.appveyor.com/api/projects/status/dprobj2m351v6aaa?svg=true "AppVeyor CI")](https://ci.appveyor.com/project/z-ax/packdir)
 
 Pack specified directory with native current OS command line tools.
 
-Main purpose was to pack the OS X/Windows Electron app,
-so Linux was not tested yet.
+Main purpose for this lib was to pack the Electron app.
 <br>
-By default, if specified `path` has a `darwin` in it's name,
+So, by default, if specified `path` has a `darwin` in it's name,
 the directory will be packed as DMG under OS X.
 
 ## Usage
