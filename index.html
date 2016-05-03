@@ -22,6 +22,9 @@
       <h1>
 <a id="packdir" class="anchor" href="#packdir" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PackDir</h1>
 
+<p><a href="https://travis-ci.org/annexare/PackDir"><img src="https://api.travis-ci.org/annexare/PackDir.svg" alt="Travis CI" title="Travis CI"></a>
+<a href="https://ci.appveyor.com/project/z-ax/packdir"><img src="https://ci.appveyor.com/api/projects/status/dprobj2m351v6aaa?svg=true" alt="AppVeyor CI" title="AppVeyor CI"></a></p>
+
 <p>Pack specified directory with native current OS command line tools.</p>
 
 <p>Main purpose was to pack the OS X/Windows Electron app,
@@ -37,13 +40,13 @@ the directory will be packed as DMG under OS X.</p>
 
 <div class="highlight highlight-source-js"><pre><span class="pl-k">const</span> <span class="pl-c1">Pack</span> <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>pack-dir<span class="pl-pds">'</span></span>);
 
-<span class="pl-k">let</span> dir <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>some/test/dir<span class="pl-pds">'</span></span>;
-
 <span class="pl-c">// Set custom DMG RegEx, default is `/darwin/`.</span>
 <span class="pl-smi">Pack</span>.<span class="pl-en">param</span>(<span class="pl-s"><span class="pl-pds">'</span>dmg<span class="pl-pds">'</span></span>,<span class="pl-sr"> <span class="pl-pds">/</span>osx<span class="pl-pds">/</span></span>);
 
 <span class="pl-c">// Pack the directory</span>
-<span class="pl-smi">Pack</span>.<span class="pl-en">path</span>(dir);</pre></div>
+<span class="pl-k">let</span> zipPath <span class="pl-k">=</span> <span class="pl-smi">Pack</span>.<span class="pl-en">path</span>(<span class="pl-s"><span class="pl-pds">'</span>some/test/dir<span class="pl-pds">'</span></span>);
+<span class="pl-c">// Extract to directory</span>
+<span class="pl-k">let</span> extractedPath <span class="pl-k">=</span> <span class="pl-smi">Pack</span>.<span class="pl-en">extract</span>(zipPath, <span class="pl-s"><span class="pl-pds">'</span>some/destination<span class="pl-pds">'</span></span>);</pre></div>
 
 <h3>
 <a id="parameters" class="anchor" href="#parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Parameters</h3>
@@ -67,11 +70,13 @@ Feel free to use it as you need in your apps or send updates into <a href="https
 All code is under MIT license.</p>
 
 <h2>
-<a id="7-zip" class="anchor" href="#7-zip" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>7-Zip</h2>
+<a id="zipunzip-for-windows" class="anchor" href="#zipunzip-for-windows" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Zip/UnZip for Windows</h2>
 
-<p>For Windows host <a href="http://www.7-zip.org/">7-Zip</a> standalone console app is used
-(~1MB, doesn't require installation).
-All license files are included with it, with respect to the author (Igor Pavlov).</p>
+<p>For Windows host
+<a href="http://gnuwin32.sourceforge.net/packages/zip.htm">Zip</a>/
+<a href="http://gnuwin32.sourceforge.net/packages/unzip.htm">UnZip</a>
+standalone console apps are used
+(~800kB, doesn't require installation, bundled with the package).</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/annexare/PackDir">Pack Directory</a> is maintained by <a href="https://github.com/annexare">annexare</a>.</span>
