@@ -21,9 +21,9 @@ let dir = 'some/test/dir';
 Pack.param('dmg', /osx/);
 
 // Pack the directory
-let zip = Pack.path(dir);
+let zipPath = Pack.path(dir);
 // Extract to directory
-Pack.extract(zip, dir);
+let extractedPath = Pack.extract(zipPath, 'some/destination');
 ```
 
 ### Parameters
