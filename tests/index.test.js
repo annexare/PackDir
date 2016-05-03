@@ -97,6 +97,7 @@ describe('Pack Dir', () => {
     it('extracts only ZIP', () => {
         expect(Pack.extract()).toEqual(-1);
         expect(Pack.extract(TEST_PATH + '/non-existent-file.zip')).toEqual(-2);
+        expect(Pack.extract(TEST_OSX_PATH + '/index.html')).toEqual(-3);
     });
 
     // Cleanup
