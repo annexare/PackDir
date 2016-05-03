@@ -15,13 +15,11 @@ Get the package via NPM: `npm install pack-dir`.
 ```js
 const Pack = require('pack-dir');
 
-let dir = 'some/test/dir';
-
 // Set custom DMG RegEx, default is `/darwin/`.
 Pack.param('dmg', /osx/);
 
 // Pack the directory
-let zipPath = Pack.path(dir);
+let zipPath = Pack.path('some/test/dir');
 // Extract to directory
 let extractedPath = Pack.extract(zipPath, 'some/destination');
 ```
