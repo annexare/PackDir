@@ -1,96 +1,170 @@
 'use strict';
 
-const Path = require('path'),
+const
+    FS = require('fs'),
+    Path = require('path'),
     isOSX = (process.platform === 'darwin'),
     isWindows = (process.platform === 'win32');
 
-let options = {
-    dmg: /darwin/,
-    dmgFormat: 'UDZO',
-    isSilent: false,
-    isSync: true
-};
+class PackDir {
+    constructor() {
+        this.params = {
+            dmg: /darwin/,
+            dmgFormat: 'UDZO',
+            isSilent: false,
+            isSync: true
+        };
 
-let setParam = (param, value) => {
-    if (!options.hasOwnProperty(param)) {
+        this.DMG = '.dmg';
+        this.ZIP = '.zip';
+    }
+
+    asDMG(path) {
+        if (!isOSX || !this.params.dmg) {
+            // Impossible to pack as DMG, or disabled
+            return false;
+        }
+        if (this.params.dmg instanceof RegExp) {
+            return this.params.dmg.test(path);
+        }
+
+        return !!this.params.dmg;
+    }
+
+    cleanFile(fileName) {
+        if (fileName && FS.existsSync(fileName)) {
+            FS.unlinkSync(fileName);
+        }
+    }
+
+    dmg(path) {
+        let fileName = path + this.DMG;
+
+        this.cleanFile(fileName);
+        this.exec()(`hdiutil create -format ${this.params.dmgFormat} -srcfolder "${path}" "${fileName}"`);
+        this.log(`DMG file created: "${fileName}"`);
+
+        return fileName;
+    }
+
+    exec() {
+        return this.params.isSync
+            ? require('child_process').execSync
+            : require('child_process').exec;
+    }
+
+    extract(path, destination) {
+        if (!path) {
+            return -1;
+        }
+
+        try {
+            let stats = FS.statSync(path);
+            if (!stats.isFile()) {
+                this.log(`Not a file: "${path}".`);
+                return -2;
+            }
+        } catch (e) {
+            return -2;
+        }
+
+        if (!path.endsWith(this.ZIP)) {
+            this.log(`Only ZIP files are supported. Provided path: "${path}".`);
+            return -3;
+        }
+
+        return this.unzip(path, destination);
+    }
+
+    path(path) {
+        try {
+            if (this.asDMG(path)) {
+                return this.dmg(path);
+            } else {
+                return this.zip(path);
+            }
+        }
+        catch (e) {
+            console.error(`Error while packaging "${path}": ${e.message}.`);
+        }
+
         return false;
     }
 
-    return options[param] = value
-};
+    paths(paths) {
+        let packs = false;
 
-let asDMG = (path) => {
-    if (!isOSX || !options.dmg) {
-        // Impossible to pack as DMG, or disabled
-        return false;
-    }
-    if (options.dmg instanceof RegExp) {
-        return options.dmg.test(path);
-    }
+        if (Array.isArray(paths)) {
+            // Recursive packing for Array of paths
+            packs = paths.map(path => {
+                return this.path(path);
+            });
+        }
 
-    return !!options.dmg;
-};
-
-let exec = () => {
-    return options.isSync
-        ? require('child_process').execSync
-        : require('child_process').exec;
-};
-
-let get7zPath = () => {
-    return Path.normalize(__dirname + '/7z/7za.exe');
-};
-
-let log = (message) => {
-    if (options.isSilent) {
-        return;
+        return packs;
     }
 
-    console.log(message + "\n");
-};
-
-let packDMG = (path) => {
-    exec()(`hdiutil create -format ${options.dmgFormat} -srcfolder "${path}" "${path}.dmg"`);
-    log(`DMG file created: "${path}.dmg"`);
-};
-
-let packZIP = (path) => {
-    let pathInfo = Path.parse(path),
-        cmd = (isWindows
-            ? `${get7zPath()} a`
-            : 'zip -r')
-            + ` "${pathInfo.base}.zip" "${pathInfo.base}"`,
-        params = { };
-
-    if (pathInfo.dir) {
-        params.cwd = pathInfo.dir;
+    getZipPath() {
+        return Path.normalize(__dirname + '/zip/zip.exe');
     }
 
-    exec()(cmd, params);
-    log(`ZIP archive created: "${path}.zip"`);
-};
+    getUnZipPath() {
+        return Path.normalize(__dirname + '/zip/unzip.exe');
+    }
 
-let pack = (path) => {
-    if (Array.isArray(path)) {
-        // Recursive packing for Array of paths
-        path.forEach(path => pack(path));
+    log(message) {
+        if (this.params.isSilent) {
+            return false;
+        }
 
+        console.log(message);
         return true;
     }
 
-    try {
-        if (asDMG(path)) {
-            packDMG(path);
-        } else {
-            packZIP(path);
+    param(name, value) {
+        if (!this.params.hasOwnProperty(name)) {
+            return null;
         }
-    }
-    catch (e) {
-        console.error(`Error while packaging "${path}":`, e.message);
-    }
-};
 
-module.exports = {
-    path: pack,
-    param: setParam
-};
+        if (typeof value === 'undefined') {
+            return this.params[name];
+        }
+
+        return this.params[name] = value;
+    }
+
+    unzip(path, destination) {
+        let pathInfo = Path.parse(path),
+            pathToUnZip = isWindows
+                ? this.getUnZipPath()
+                : 'unzip',
+            extractTo = destination || pathInfo.dir,
+            cmd = `${pathToUnZip} -o "${path}" -d "${extractTo}"`;
+
+        this.exec()(cmd);
+
+        return extractTo;
+    }
+
+    zip(path) {
+        let fileName = path + this.ZIP,
+            pathInfo = Path.parse(path),
+            pathToZip = isWindows
+                ? this.getZipPath()
+                : 'zip',
+            cmd = `${pathToZip} -r "${pathInfo.base}.zip" "${pathInfo.base}"`,
+            params = {};
+
+        if (pathInfo.dir) {
+            params.cwd = pathInfo.dir;
+        }
+
+        this.cleanFile(fileName);
+        this.exec()(cmd, params);
+        this.log(`ZIP archive created: "${fileName}"`);
+
+        return fileName;
+    }
+}
+
+module.exports = new PackDir();
