@@ -1,4 +1,4 @@
-# PackDir
+# PackDir ![Travis CI](https://api.travis-ci.org/annexare/PackDir.svg "Travis CI")
 
 Pack specified directory with native current OS command line tools.
 
