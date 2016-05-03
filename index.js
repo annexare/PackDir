@@ -53,8 +53,27 @@ class PackDir {
             : require('child_process').exec;
     }
 
-    extractTo(path) {
-        this.log(`TODO: Extract to "${path}"`);
+    extract(path, destination) {
+        if (!path) {
+            return -1;
+        }
+
+        try {
+            let stats = FS.statSync(path);
+            if (!stats.isFile()) {
+                this.log(`Not a file: "${path}".`);
+                return -2;
+            }
+        } catch (e) {
+            return -2;
+        }
+
+        if (!path.endsWith(this.ZIP)) {
+            this.log(`Only ZIP files are supported. Provided path: "${path}".`);
+            return -3;
+        }
+
+        return this.unzip(path, destination);
     }
 
     path(path) {
@@ -66,7 +85,7 @@ class PackDir {
             }
         }
         catch (e) {
-            console.error(`Error while packaging "${path}":`, e.message);
+            console.error(`Error while packaging "${path}": ${e.message}.`);
         }
 
         return false;
@@ -87,6 +106,10 @@ class PackDir {
 
     getZipPath() {
         return Path.normalize(__dirname + '/zip/zip.exe');
+    }
+
+    getUnZipPath() {
+        return Path.normalize(__dirname + '/zip/unzip.exe');
     }
 
     log(message) {
@@ -110,13 +133,26 @@ class PackDir {
         return this.params[name] = value;
     }
 
+    unzip(path, destination) {
+        let pathInfo = Path.parse(path),
+            pathToUnZip = isWindows
+                ? this.getUnZipPath()
+                : 'unzip',
+            extractTo = destination || pathInfo.dir,
+            cmd = `${pathToUnZip} -o "${path}" -d "${extractTo}"`;
+
+        this.exec()(cmd);
+
+        return extractTo;
+    }
+
     zip(path) {
         let fileName = path + this.ZIP,
             pathInfo = Path.parse(path),
-            cmd = (isWindows
-                    ? `${this.getZipPath()}`
-                    : 'zip')
-                + ` -r "${pathInfo.base}.zip" "${pathInfo.base}"`,
+            pathToZip = isWindows
+                ? this.getZipPath()
+                : 'zip',
+            cmd = `${pathToZip} -r "${pathInfo.base}.zip" "${pathInfo.base}"`,
             params = {};
 
         if (pathInfo.dir) {

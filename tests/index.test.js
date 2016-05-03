@@ -4,6 +4,7 @@ const fs = require('fs');
 const isOSX = (process.platform === 'darwin'),
     TEST_PATH = 'tests',
     TEST_DIR_PATH = TEST_PATH + '/test-dir',
+    TEST_EXTRACT_PATH = TEST_PATH + '/test-extract',
     TEST_OSX_PATH = TEST_PATH + '/test-osx',
     TEST_OSX_REG = /osx/;
 
@@ -25,10 +26,20 @@ describe('Pack Dir', () => {
         expect(Pack.param(param)).toEqual(value);
     });
 
-    it('has correct ZIP executable for Windows', () => {
-        let stats = fs.statSync(Pack.getZipPath());
+    it('refuses non existent param', () => {
+        let param = 'dummy',
+            value = 'value';
 
-        expect(stats.isFile()).toBe(true);
+        expect(Pack.param(param, value)).toEqual(null);
+        expect(Pack.param(param)).toEqual(null);
+    });
+
+    it('has correct ZIP/UNZIP executables for Windows', () => {
+        let statZip = fs.statSync(Pack.getZipPath()),
+            statUnZip = fs.statSync(Pack.getUnZipPath());
+
+        expect(statZip.isFile()).toBe(true);
+        expect(statUnZip.isFile()).toBe(true);
     });
 
     it('checks for DMG correctly', () => {
@@ -55,11 +66,16 @@ describe('Pack Dir', () => {
         expect(Pack.log('This log should appear.')).toBe(true);
     });
 
-    it('packs one as expected', () => {
+    it('packs / extracts one as expected', () => {
         let pack = Pack.path(TEST_DIR_PATH),
             stats = fs.statSync(pack);
 
         expect(stats.isFile()).toBe(true);
+
+        let dir = Pack.extract(pack, TEST_EXTRACT_PATH);
+
+        stats = fs.statSync(dir);
+        expect(stats.isDirectory()).toBe(true);
     });
 
     it('packs several as expected', () => {
@@ -76,6 +92,12 @@ describe('Pack Dir', () => {
                 expect(stats.isFile()).toBe(true);
             });
         }
+    });
+
+    it('extracts only ZIP', () => {
+        expect(Pack.extract()).toEqual(-1);
+        expect(Pack.extract(TEST_PATH + '/non-existent-file.zip')).toEqual(-2);
+        expect(Pack.extract(TEST_OSX_PATH + Pack.DMG)).toEqual(-3);
     });
 
     // Cleanup
