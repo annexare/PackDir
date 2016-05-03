@@ -33,7 +33,7 @@
         "url": "https://github.com/annexare/PackDir/issues"
     },
     "engines": {
-        "node": ">=5.10.0"
+        "node": ">=4.0.0"
     },
     "jest": {
         "collectCoverage": true,
