@@ -21,7 +21,7 @@ let dir = 'some/test/dir';
 Pack.param('dmg', /osx/);
 
 // Pack the directory
-Pack.fromPath(dir);
+Pack.path(dir);
 ```
 
 ### Parameters

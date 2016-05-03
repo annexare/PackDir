@@ -57,7 +57,7 @@ class PackDir {
         this.log(`TODO: Extract to "${path}"`);
     }
 
-    fromPath(path) {
+    path(path) {
         try {
             if (this.asDMG(path)) {
                 return this.dmg(path);
@@ -72,13 +72,13 @@ class PackDir {
         return false;
     }
 
-    fromPaths(paths) {
+    paths(paths) {
         let packs = false;
 
         if (Array.isArray(paths)) {
             // Recursive packing for Array of paths
             packs = paths.map(path => {
-                return this.fromPath(path);
+                return this.path(path);
             });
         }
 

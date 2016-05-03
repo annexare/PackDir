@@ -55,17 +55,17 @@ describe('Pack Dir', () => {
         expect(Pack.log('This log should appear.')).toBe(true);
     });
 
-    it('packs file as expected', () => {
-        let pack = Pack.fromPath(TEST_DIR_PATH),
+    it('packs one as expected', () => {
+        let pack = Pack.path(TEST_DIR_PATH),
             stats = fs.statSync(pack);
 
         expect(stats.isFile()).toBe(true);
     });
 
-    it('packs files as expected', () => {
+    it('packs several as expected', () => {
         Pack.param('dmg', TEST_OSX_REG);
 
-        let packs = Pack.fromPaths([TEST_DIR_PATH, TEST_OSX_PATH]),
+        let packs = Pack.paths([TEST_DIR_PATH, TEST_OSX_PATH]),
             isOkay = Array.isArray(packs);
 
         expect(isOkay).toEqual(true);
