@@ -1,3 +1,5 @@
+build: off
+version: "{build}"
 environment:
   matrix:
     - nodejs_version: "6"
@@ -16,5 +18,5 @@ test_script:
   - npm --version
   - npm test
 
-build: off
-version: {build}
+skip_commits:
+  message: /\[ci skip\]/
