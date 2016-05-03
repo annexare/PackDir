@@ -42,7 +42,8 @@ All code is under MIT license.
 ## Zip/UnZip for Windows
 
 For Windows host
-[Zip](http://gnuwin32.sourceforge.net/packages/zip.htm)/
+[Zip](http://gnuwin32.sourceforge.net/packages/zip.htm)
+/
 [UnZip](http://gnuwin32.sourceforge.net/packages/unzip.htm)
 standalone console apps are used
 (~800kB, doesn't require installation, bundled with the package).
