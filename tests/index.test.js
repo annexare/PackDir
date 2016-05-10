@@ -94,6 +94,10 @@ describe('Pack Dir', () => {
         }
     });
 
+    it('handles non-existent path', () => {
+        expect(Pack.path(TEST_PATH + '/non-existent-path')).toEqual(false);
+    });
+
     it('extracts only ZIP', () => {
         expect(Pack.extract()).toEqual(-1);
         expect(Pack.extract(TEST_PATH + '/non-existent-file.zip')).toEqual(-2);

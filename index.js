@@ -69,7 +69,7 @@ class PackDir {
         }
 
         if (!path.endsWith(this.ZIP)) {
-            this.log(`Only ZIP files are supported. Provided path: "${path}".`);
+            this.log(`Only ZIP files can be extracted. Provided path: "${path}".`);
             return -3;
         }
 
@@ -78,6 +78,11 @@ class PackDir {
 
     path(path) {
         try {
+            if (!FS.existsSync(path)) {
+                console.error(`Specified path does not exist: "${path}".`);
+                return false;
+            }
+
             if (this.asDMG(path)) {
                 return this.dmg(path);
             } else {
@@ -149,10 +154,14 @@ class PackDir {
     zip(path) {
         let fileName = path + this.ZIP,
             pathInfo = Path.parse(path),
+            pathStat = FS.statSync(path),
+            pathBase = pathStat.isDirectory()
+                ? pathInfo.base + '\\' + Path.sep + '*'
+                : pathInfo.base,
             pathToZip = isWindows
                 ? this.getZipPath()
                 : 'zip',
-            cmd = `${pathToZip} -r "${pathInfo.base}.zip" "${pathInfo.base}"`,
+            cmd = `${pathToZip} -r "${pathInfo.base}.zip" ${pathBase}`,
             params = {};
 
         if (pathInfo.dir) {
