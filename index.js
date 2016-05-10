@@ -6,6 +6,8 @@ const
     isOSX = (process.platform === 'darwin'),
     isWindows = (process.platform === 'win32');
 
+let unset;
+
 class PackDir {
     constructor() {
         this.params = {
@@ -37,20 +39,23 @@ class PackDir {
         }
     }
 
-    dmg(path) {
-        let fileName = path + this.DMG;
+    dmg(path, callback) {
+        let fileName = path + this.DMG,
+            cmd = `hdiutil create -format ${this.params.dmgFormat} -srcfolder "${path}" "${fileName}"`;
 
         this.cleanFile(fileName);
-        this.exec()(`hdiutil create -format ${this.params.dmgFormat} -srcfolder "${path}" "${fileName}"`);
+        this.exec(cmd, unset, callback || unset);
         this.log(`DMG file created: "${fileName}"`);
 
         return fileName;
     }
 
-    exec() {
-        return this.params.isSync
+    exec(cmd, params, callback) {
+        let execute = this.params.isSync
             ? require('child_process').execSync
             : require('child_process').exec;
+
+        return execute(cmd, params, callback);
     }
 
     extract(path, destination) {
@@ -76,7 +81,7 @@ class PackDir {
         return this.unzip(path, destination);
     }
 
-    path(path) {
+    path(path, callback) {
         try {
             if (!FS.existsSync(path)) {
                 console.error(`Specified path does not exist: "${path}".`);
@@ -84,9 +89,9 @@ class PackDir {
             }
 
             if (this.asDMG(path)) {
-                return this.dmg(path);
+                return this.dmg(path, callback);
             } else {
-                return this.zip(path);
+                return this.zip(path, callback);
             }
         }
         catch (e) {
@@ -96,13 +101,13 @@ class PackDir {
         return false;
     }
 
-    paths(paths) {
+    paths(paths, callback) {
         let packs = false;
 
         if (Array.isArray(paths)) {
             // Recursive packing for Array of paths
             packs = paths.map(path => {
-                return this.path(path);
+                return this.path(path, callback);
             });
         }
 
@@ -138,7 +143,7 @@ class PackDir {
         return this.params[name] = value;
     }
 
-    unzip(path, destination) {
+    unzip(path, destination, callback) {
         let pathInfo = Path.parse(path),
             pathToUnZip = isWindows
                 ? this.getUnZipPath()
@@ -146,12 +151,12 @@ class PackDir {
             extractTo = destination || pathInfo.dir,
             cmd = `${pathToUnZip} -o "${path}" -d "${extractTo}"`;
 
-        this.exec()(cmd);
+        this.exec(cmd, unset, callback || unset);
 
         return extractTo;
     }
 
-    zip(path) {
+    zip(path, callback) {
         let fileName = path + this.ZIP,
             pathInfo = Path.parse(path),
             pathStat = FS.statSync(path),
@@ -169,7 +174,7 @@ class PackDir {
         }
 
         this.cleanFile(fileName);
-        this.exec()(cmd, params);
+        this.exec(cmd, params, callback || unset);
         this.log(`ZIP archive created: "${fileName}"`);
 
         return fileName;
