@@ -24,6 +24,12 @@ Pack.param('dmg', /osx/);
 let zipPath = Pack.path('some/test/dir');
 // Extract to directory
 let extractedPath = Pack.extract(zipPath, 'some/destination');
+
+// Async example
+Pack.param('isSync', false);
+let zipPath = Pack.path('some/test/dir', (error, stdout, stderr) => {
+  // ...
+});
 ```
 
 ### Parameters
