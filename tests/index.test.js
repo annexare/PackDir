@@ -3,7 +3,7 @@
 const fs = require('fs');
 const isOSX = (process.platform === 'darwin'),
     TEST_PATH = 'tests',
-    TEST_DIR_PATH = TEST_PATH + '/test-dir',
+    TEST_DIR_PATH = TEST_PATH + '/test dir',
     TEST_EXTRACT_PATH = TEST_PATH + '/test-extract',
     TEST_OSX_PATH = TEST_PATH + '/test-osx',
     TEST_OSX_REG = /osx/;
