@@ -49,13 +49,13 @@ describe('Pack Dir', () => {
     });
 
     it('executed sync/async', () => {
-        let process = require('child_process');
+        let cmd = 'echo test';
 
         Pack.param('isSync', true);
-        expect(Pack.exec()).toBe(process.execSync);
+        expect(Pack.exec(cmd) instanceof Buffer).toBe(true);
 
         Pack.param('isSync', false);
-        expect(Pack.exec()).toBe(process.exec);
+        expect(Pack.exec(cmd) instanceof require('events')).toBe(true);
     });
 
     it('logs are silent when off', () => {
