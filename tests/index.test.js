@@ -104,6 +104,10 @@ describe('Pack Dir', () => {
         expect(Pack.extract(TEST_OSX_PATH + '/index.html')).toEqual(-3);
     });
 
+    it('escapes args/paths', () => {
+        expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ', '\\ '));
+    });
+
     // Cleanup
     fs.readdir(TEST_PATH, (err, files) => {
         if (files && files.length) {
