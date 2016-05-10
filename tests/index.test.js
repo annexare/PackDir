@@ -3,7 +3,7 @@
 const fs = require('fs');
 const isOSX = (process.platform === 'darwin'),
     TEST_PATH = 'tests',
-    TEST_DIR_PATH = TEST_PATH + '/test-dir',
+    TEST_DIR_PATH = TEST_PATH + '/test dir',
     TEST_EXTRACT_PATH = TEST_PATH + '/test-extract',
     TEST_OSX_PATH = TEST_PATH + '/test-osx',
     TEST_OSX_REG = /osx/;
@@ -102,6 +102,10 @@ describe('Pack Dir', () => {
         expect(Pack.extract()).toEqual(-1);
         expect(Pack.extract(TEST_PATH + '/non-existent-file.zip')).toEqual(-2);
         expect(Pack.extract(TEST_OSX_PATH + '/index.html')).toEqual(-3);
+    });
+
+    it('escapes args/paths', () => {
+        expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ', '\\ '));
     });
 
     // Cleanup

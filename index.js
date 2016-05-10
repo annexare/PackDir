@@ -41,13 +41,21 @@ class PackDir {
 
     dmg(path, callback) {
         let fileName = path + this.DMG,
-            cmd = `hdiutil create -format ${this.params.dmgFormat} -srcfolder "${path}" "${fileName}"`;
+            fileNameArg = this.escapeArg(fileName),
+            pathArg = this.escapeArg(path),
+            cmd = `hdiutil create -format ${this.params.dmgFormat} -srcfolder ${pathArg} ${fileNameArg}`;
 
         this.cleanFile(fileName);
         this.exec(cmd, unset, callback || unset);
         this.log(`DMG file created: "${fileName}"`);
 
         return fileName;
+    }
+
+    escapeArg(arg) {
+        return arg
+            .trim()
+            .replace(/(["\s'$`\\])/g, '\\$1');
     }
 
     exec(cmd, params, callback) {
@@ -148,8 +156,8 @@ class PackDir {
             pathToUnZip = isWindows
                 ? this.getUnZipPath()
                 : 'unzip',
-            extractTo = destination || pathInfo.dir,
-            cmd = `${pathToUnZip} -o "${path}" -d "${extractTo}"`;
+            extractTo = this.escapeArg(destination || pathInfo.dir),
+            cmd = `${pathToUnZip} -o ${this.escapeArg(path)} -d ${extractTo}`;
 
         this.exec(cmd, unset, callback || unset);
 
@@ -160,13 +168,16 @@ class PackDir {
         let fileName = path + this.ZIP,
             pathInfo = Path.parse(path),
             pathStat = FS.statSync(path),
-            pathBase = pathStat.isDirectory()
-                ? pathInfo.base + '\\' + Path.sep + '*'
-                : pathInfo.base,
+            pathWithMask = this.escapeArg(
+                pathStat.isDirectory()
+                ? pathInfo.base + Path.sep + '*'
+                : pathInfo.base
+            ),
             pathToZip = isWindows
                 ? this.getZipPath()
                 : 'zip',
-            cmd = `${pathToZip} -r "${pathInfo.base}.zip" ${pathBase}`,
+            pathToZipFile = this.escapeArg(pathInfo.base + '.zip'),
+            cmd = `${pathToZip} -r ${pathToZipFile} ${pathWithMask}`,
             params = {};
 
         if (pathInfo.dir) {
