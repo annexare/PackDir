@@ -66,6 +66,14 @@ class PackDir {
         return execute(cmd, params, callback);
     }
 
+    execFile(file, args, params, callback) {
+        let execute = this.params.isSync
+            ? require('child_process').execFileSync
+            : require('child_process').execFile;
+
+        return execute(file, args, params, callback);
+    }
+
     extract(path, destination) {
         if (!path) {
             return -1;
@@ -153,13 +161,20 @@ class PackDir {
 
     unzip(path, destination, callback) {
         let pathInfo = Path.parse(path),
-            pathToUnZip = isWindows
-                ? this.getUnZipPath()
-                : 'unzip',
-            extractTo = this.escapeArg(destination || pathInfo.dir),
-            cmd = `${pathToUnZip} -o ${this.escapeArg(path)} -d ${extractTo}`;
-
-        this.exec(cmd, unset, callback || unset);
+            extractTo = this.escapeArg(destination || pathInfo.dir);
+        
+        if (isWindows) {
+            let args = [
+                '-o',
+                this.escapeArg(path),
+                '-d',
+                extractTo
+            ];            
+            this.execFile(this.getUnZipPath(), args, unset, callback || unset);
+        } else {
+            let cmd = `unzip -o ${this.escapeArg(path)} -d ${extractTo}`;
+            this.exec(cmd, unset, callback || unset);
+        }
 
         return extractTo;
     }
@@ -173,11 +188,7 @@ class PackDir {
                 ? pathInfo.base + Path.sep + '*'
                 : pathInfo.base
             ),
-            pathToZip = isWindows
-                ? this.getZipPath()
-                : 'zip',
             pathToZipFile = this.escapeArg(pathInfo.base + '.zip'),
-            cmd = `${pathToZip} -r ${pathToZipFile} ${pathWithMask}`,
             params = {};
 
         if (pathInfo.dir) {
@@ -185,7 +196,19 @@ class PackDir {
         }
 
         this.cleanFile(fileName);
-        this.exec(cmd, params, callback || unset);
+
+        if (isWindows) {
+            let args = [
+                '-r',
+                pathToZipFile,
+                pathWithMask
+            ];
+            this.execFile(this.getZipPath(), args, params, callback || unset);
+        } else {
+            let cmd = `zip -r ${pathToZipFile} ${pathWithMask}`
+            this.exec(cmd, params, callback || unset);    
+        }
+
         this.log(`ZIP archive created: "${fileName}"`);
 
         return fileName;
