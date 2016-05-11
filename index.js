@@ -53,6 +53,12 @@ class PackDir {
     }
 
     escapeArg(arg) {
+        if (isWindows) {
+            return arg
+                    .trim()
+                    .replace(' ' , '\ ');
+        }
+
         return arg
             .trim()
             .replace(/(["\s'$`\\])/g, '\\$1');
@@ -64,6 +70,14 @@ class PackDir {
             : require('child_process').exec;
 
         return execute(cmd, params, callback);
+    }
+
+    execFile(file, args, params, callback) {
+        let execute = this.params.isSync
+            ? require('child_process').execFileSync
+            : require('child_process').execFile;
+
+        return execute(file, args, params, callback);
     }
 
     extract(path, destination) {
@@ -103,7 +117,7 @@ class PackDir {
             }
         }
         catch (e) {
-            console.error(`Error while packaging "${path}": ${e.message}.`);
+            console.error(`Error while packaging "${path}":\n${e.message.trim()}`);
         }
 
         return false;
@@ -153,13 +167,22 @@ class PackDir {
 
     unzip(path, destination, callback) {
         let pathInfo = Path.parse(path),
-            pathToUnZip = isWindows
-                ? this.getUnZipPath()
-                : 'unzip',
+            extractWhat = this.escapeArg(path),
             extractTo = this.escapeArg(destination || pathInfo.dir),
-            cmd = `${pathToUnZip} -o ${this.escapeArg(path)} -d ${extractTo}`;
+            args = [
+                '-o',
+                extractWhat,
+                '-d',
+                extractTo
+            ];
 
-        this.exec(cmd, unset, callback || unset);
+        if (isWindows) {
+            // Within Electron + ASAR, we can only use `execFile()` for bundled zip.exe
+            this.execFile(this.getUnZipPath(), args, unset, callback || unset);
+        } else {
+            let cmd = 'unzip ' + args.join(' ');
+            this.exec(cmd, unset, callback || unset);
+        }
 
         return extractTo;
     }
@@ -168,24 +191,34 @@ class PackDir {
         let fileName = path + this.ZIP,
             pathInfo = Path.parse(path),
             pathStat = FS.statSync(path),
-            pathWithMask = this.escapeArg(
+            pathWithMask = (
                 pathStat.isDirectory()
-                ? pathInfo.base + Path.sep + '*'
+                ? (pathInfo.base + Path.sep + '*')
                 : pathInfo.base
             ),
-            pathToZip = isWindows
-                ? this.getZipPath()
-                : 'zip',
-            pathToZipFile = this.escapeArg(pathInfo.base + '.zip'),
-            cmd = `${pathToZip} -r ${pathToZipFile} ${pathWithMask}`,
+            pathToZipFile = pathInfo.base + '.zip',
             params = {};
-
+            
         if (pathInfo.dir) {
             params.cwd = pathInfo.dir;
         }
 
         this.cleanFile(fileName);
-        this.exec(cmd, params, callback || unset);
+
+        let args = [
+            '-r',
+            this.escapeArg(pathToZipFile),
+            this.escapeArg(pathWithMask)
+        ];
+
+        if (isWindows) {
+            // Within Electron + ASAR, we can only use `execFile()` for bundled zip.exe
+            this.execFile(this.getZipPath(), args, params, callback || unset);
+        } else {
+            let cmd = 'zip ' + args.join(' ');
+            this.exec(cmd, params, callback || unset);
+        }
+
         this.log(`ZIP archive created: "${fileName}"`);
 
         return fileName;
