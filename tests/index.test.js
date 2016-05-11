@@ -50,7 +50,7 @@ describe('Pack Dir', () => {
     });
 
     it('executed sync/async', () => {
-        let cmd = 'echo test';
+        let cmd = 'node -v';
 
         Pack.param('isSync', true);
         expect(Pack.exec(cmd) instanceof Buffer).toBe(true);
@@ -60,13 +60,14 @@ describe('Pack Dir', () => {
     });
 
     it('executed file sync/async', () => {
-        let cmd = 'echo';
+        let cmd = 'node',
+            args = ['-v'];
 
         Pack.param('isSync', true);
         expect(Pack.execFile(cmd) instanceof Buffer).toBe(true);
 
         Pack.param('isSync', false);
-        expect(Pack.execFile(cmd) instanceof require('events')).toBe(true);
+        expect(Pack.execFile(cmd, args) instanceof require('events')).toBe(true);
     });
 
     it('logs are silent when off', () => {
@@ -117,7 +118,7 @@ describe('Pack Dir', () => {
 
     it('escapes args/paths', () => {
         if (isWindows) {
-            expect(Pack.escapeArg(TEST_PATH)).toEqual('"' + TEST_PATH.replace('"', '\\"') + '"');
+            expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ' , '\ '));
         } else {
             expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ', '\\ '));
         }

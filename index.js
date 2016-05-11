@@ -54,11 +54,9 @@ class PackDir {
 
     escapeArg(arg) {
         if (isWindows) {
-            return '"'
-                + arg
+            return arg
                     .trim()
-                    .replace(/(["])/g, '\\$1')
-                + '"';
+                    .replace(' ' , '\ ');
         }
 
         return arg
@@ -119,7 +117,7 @@ class PackDir {
             }
         }
         catch (e) {
-            console.error(`Error while packaging "${path}": ${e.message}.`);
+            console.error(`Error while packaging "${path}":\n${e.message.trim()}`);
         }
 
         return false;
@@ -193,14 +191,14 @@ class PackDir {
         let fileName = path + this.ZIP,
             pathInfo = Path.parse(path),
             pathStat = FS.statSync(path),
-            pathWithMask = this.escapeArg(
+            pathWithMask = (
                 pathStat.isDirectory()
-                    ? pathInfo.base + Path.sep + '*'
-                    : pathInfo.base
+                ? (pathInfo.base + Path.sep + '*')
+                : pathInfo.base
             ),
-            pathToZipFile = this.escapeArg(pathInfo.base + '.zip'),
+            pathToZipFile = pathInfo.base + '.zip',
             params = {};
-
+            
         if (pathInfo.dir) {
             params.cwd = pathInfo.dir;
         }
@@ -209,8 +207,8 @@ class PackDir {
 
         let args = [
             '-r',
-            pathToZipFile,
-            pathWithMask
+            this.escapeArg(pathToZipFile),
+            this.escapeArg(pathWithMask)
         ];
 
         if (isWindows) {
