@@ -1,5 +1,7 @@
 'use strict';
 
+jest.autoMockOff();
+
 const fs = require('fs');
 const isOSX = (process.platform === 'darwin'),
     isWindows = (process.platform === 'win32'),
@@ -8,8 +10,6 @@ const isOSX = (process.platform === 'darwin'),
     TEST_EXTRACT_PATH = TEST_PATH + '/test-extract',
     TEST_OSX_PATH = TEST_PATH + '/test-osx',
     TEST_OSX_REG = /osx/;
-
-jest.autoMockOff();
 
 describe('Pack Dir', () => {
 
