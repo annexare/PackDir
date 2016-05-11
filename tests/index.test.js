@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const isOSX = (process.platform === 'darwin'),
+    isWindows = (process.platform === 'win32'),
     TEST_PATH = 'tests',
     TEST_DIR_PATH = TEST_PATH + '/test dir',
     TEST_EXTRACT_PATH = TEST_PATH + '/test-extract',
@@ -58,6 +59,16 @@ describe('Pack Dir', () => {
         expect(Pack.exec(cmd) instanceof require('events')).toBe(true);
     });
 
+    it('executed file sync/async', () => {
+        let cmd = 'echo';
+
+        Pack.param('isSync', true);
+        expect(Pack.execFile(cmd) instanceof Buffer).toBe(true);
+
+        Pack.param('isSync', false);
+        expect(Pack.execFile(cmd) instanceof require('events')).toBe(true);
+    });
+
     it('logs are silent when off', () => {
         Pack.param('isSilent', true);
         expect(Pack.log('Something silent.')).toBe(false);
@@ -105,7 +116,11 @@ describe('Pack Dir', () => {
     });
 
     it('escapes args/paths', () => {
-        expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ', '\\ '));
+        if (isWindows) {
+            expect(Pack.escapeArg(TEST_PATH)).toEqual('"' + TEST_PATH.replace('"', '\\"') + '"');
+        } else {
+            expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ', '\\ '));
+        }
     });
 
     // Cleanup
