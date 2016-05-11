@@ -21,7 +21,7 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "jest-cli": "^12.0.2"
+        "jest-cli": "^12.0.3 || 11.0.2"
     },
     "author": {
         "name": "Dmytro",
