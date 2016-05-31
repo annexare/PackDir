@@ -212,6 +212,7 @@ class PackDir {
         ];
 
         if (isWindows) {
+            args.unshift('-S');
             // Within Electron + ASAR, we can only use `execFile()` for bundled zip.exe
             this.execFile(this.getZipPath(), args, params, callback || unset);
         } else {
