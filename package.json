@@ -1,13 +1,15 @@
 {
     "name": "pack-dir",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "Pack/unpack specified directory with native current OS command line tools.",
     "keywords": [
         "pack",
+        "extract",
         "directory",
         "utility",
         "dmg",
         "zip",
+        "unzip",
         "archive",
         "Annexare"
     ],
@@ -21,7 +23,7 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "jest-cli": "^12.0.3 || 11.0.2"
+        "jest-cli": "^12.1.1 || 11.0.2"
     },
     "author": {
         "name": "Dmytro",
