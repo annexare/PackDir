@@ -22,10 +22,11 @@
       <h1>
 <a id="packdir" class="anchor" href="#packdir" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PackDir</h1>
 
-<p><a href="https://travis-ci.org/annexare/PackDir"><img src="https://api.travis-ci.org/annexare/PackDir.svg" alt="Travis CI" title="Travis CI"></a>
+<p><a href="https://www.npmjs.com/package/pack-dir"><img src="https://img.shields.io/npm/v/pack-dir.svg" alt="NPM" title="NPM package version"></a>
+<a href="https://travis-ci.org/annexare/PackDir"><img src="https://api.travis-ci.org/annexare/PackDir.svg" alt="Travis CI" title="Travis CI"></a>
 <a href="https://ci.appveyor.com/project/z-ax/packdir"><img src="https://ci.appveyor.com/api/projects/status/dprobj2m351v6aaa?svg=true" alt="AppVeyor CI" title="AppVeyor CI"></a></p>
 
-<p>Pack directory with native command line tools (DMG, ZIP, Node.js, cross-platform).</p>
+<p>Pack specified directory with native current OS command line tools.</p>
 
 <p>Main purpose for this lib was to pack the Electron app.
 <br>
@@ -45,7 +46,13 @@ the directory will be packed as DMG under OS X.</p>
 <span class="pl-c">// Pack the directory</span>
 <span class="pl-k">let</span> zipPath <span class="pl-k">=</span> <span class="pl-smi">Pack</span>.<span class="pl-en">path</span>(<span class="pl-s"><span class="pl-pds">'</span>some/test/dir<span class="pl-pds">'</span></span>);
 <span class="pl-c">// Extract to directory</span>
-<span class="pl-k">let</span> extractedPath <span class="pl-k">=</span> <span class="pl-smi">Pack</span>.<span class="pl-en">extract</span>(zipPath, <span class="pl-s"><span class="pl-pds">'</span>some/destination<span class="pl-pds">'</span></span>);</pre></div>
+<span class="pl-k">let</span> extractedPath <span class="pl-k">=</span> <span class="pl-smi">Pack</span>.<span class="pl-en">extract</span>(zipPath, <span class="pl-s"><span class="pl-pds">'</span>some/destination<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// Async example</span>
+<span class="pl-smi">Pack</span>.<span class="pl-en">param</span>(<span class="pl-s"><span class="pl-pds">'</span>isSync<span class="pl-pds">'</span></span>, <span class="pl-c1">false</span>);
+<span class="pl-k">let</span> zipPath <span class="pl-k">=</span> <span class="pl-smi">Pack</span>.<span class="pl-en">path</span>(<span class="pl-s"><span class="pl-pds">'</span>some/test/dir<span class="pl-pds">'</span></span>, (<span class="pl-smi">error</span>, <span class="pl-smi">stdout</span>, <span class="pl-smi">stderr</span>) <span class="pl-k">=&gt;</span> {
+  <span class="pl-c">// ...</span>
+});</pre></div>
 
 <h3>
 <a id="parameters" class="anchor" href="#parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Parameters</h3>
@@ -59,6 +66,8 @@ the directory will be packed as DMG under OS X.</p>
 <code>isSilent</code> <code>boolean</code>, <code>false</code>, will write only Errors to console.</li>
 <li>
 <code>isSync</code> <code>boolean</code>, <code>true</code>, synchronous packaging.</li>
+<li>
+<code>skipDirName</code> <code>boolean</code>, <code>true</code>, don't create extra directory inside ZIP archive.</li>
 </ul>
 
 <h2>
