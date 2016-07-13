@@ -1,6 +1,6 @@
 {
     "name": "pack-dir",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "description": "Pack/unpack specified directory with native current OS command line tools.",
     "keywords": [
         "pack",
@@ -23,7 +23,7 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "jest-cli": "^12.1.1 || 11.0.2"
+        "jest-cli": "^13.2.3"
     },
     "author": {
         "name": "Dmytro",
