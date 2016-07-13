@@ -204,7 +204,7 @@ class PackDir {
 
         if (this.params.skipDirName && pathStat.isDirectory()) {
             params.cwd = path;
-            pathWithMask = "*";
+            pathWithMask = '*';
             pathToZipFile = Path.join('..', pathToZipFile);
         }
 
