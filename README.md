@@ -1,5 +1,6 @@
 # PackDir
 
+[![NPM](https://img.shields.io/npm/v/pack-dir.svg "NPM package version")](https://www.npmjs.com/package/pack-dir)
 [![Travis CI](https://api.travis-ci.org/annexare/PackDir.svg "Travis CI")](https://travis-ci.org/annexare/PackDir)
 [![AppVeyor CI](https://ci.appveyor.com/api/projects/status/dprobj2m351v6aaa?svg=true "AppVeyor CI")](https://ci.appveyor.com/project/z-ax/packdir)
 
