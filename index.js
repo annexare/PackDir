@@ -15,7 +15,7 @@ class PackDir {
             dmgFormat: 'UDZO',
             isSilent: false,
             isSync: true,
-            skipDirName: false
+            skipDirName: true
         };
 
         this.DMG = '.dmg';
@@ -192,11 +192,7 @@ class PackDir {
         let fileName = path + this.ZIP,
             pathInfo = Path.parse(path),
             pathStat = FS.statSync(path),
-            pathWithMask = (
-                pathStat.isDirectory()
-                ? (pathInfo.base + Path.sep + '*')
-                : pathInfo.base
-            ),
+            pathWithMask = pathInfo.base,
             pathToZipFile = pathInfo.base + '.zip',
             params = {};
             
