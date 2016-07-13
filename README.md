@@ -39,6 +39,7 @@ let zipPath = Pack.path('some/test/dir', (error, stdout, stderr) => {
 * `dmgFormat` `string`, the `hdiutil -format` parameter value ([docs](https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/hdiutil.1.html)).
 * `isSilent` `boolean`, `false`, will write only Errors to console.
 * `isSync` `boolean`, `true`, synchronous packaging.
+* `skipDirName` `boolean`, `true`, don't create extra directory inside ZIP archive.
 
 ## Credits
 
