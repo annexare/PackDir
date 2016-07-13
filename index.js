@@ -14,7 +14,8 @@ class PackDir {
             dmg: /darwin/,
             dmgFormat: 'UDZO',
             isSilent: false,
-            isSync: true
+            isSync: true,
+            skipDirName: false
         };
 
         this.DMG = '.dmg';
@@ -204,6 +205,12 @@ class PackDir {
         }
 
         this.cleanFile(fileName);
+
+        if (this.params.skipDirName && pathStat.isDirectory()) {
+            params.cwd = path;
+            pathWithMask = "*";
+            pathToZipFile = Path.join('..', pathToZipFile);
+        }
 
         let args = [
             '-r',
