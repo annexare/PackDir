@@ -125,14 +125,6 @@ describe('Pack Dir', () => {
         }
     });
 
-    //it('works with unicode in path', () => {
-    //    if (isWindows) {
-    //        expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ' , '\ '));
-    //    } else {
-    //        expect(Pack.escapeArg(TEST_PATH)).toEqual(TEST_PATH.replace(' ', '\\ '));
-    //    }
-    //});
-
     it('cleans up all test data', () => {
         let files = fs.readdirSync(TEST_PATH),
             removedFilesCount = 0;
