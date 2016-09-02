@@ -3,12 +3,13 @@
 jest.autoMockOff();
 
 const fs = require('fs');
+const path = require('path');
 const isOSX = (process.platform === 'darwin'),
     isWindows = (process.platform === 'win32'),
-    TEST_PATH = 'tests',
-    TEST_DIR_PATH = TEST_PATH + '/test dir',
-    TEST_EXTRACT_PATH = TEST_PATH + '/test-extract',
-    TEST_OSX_PATH = TEST_PATH + '/test-osx',
+    TEST_PATH = __dirname,
+    TEST_DIR_PATH = path.join(TEST_PATH, 'test こんにちは世界', 'test dir'),
+    TEST_EXTRACT_PATH = path.join(TEST_PATH, 'test-extract'),
+    TEST_OSX_PATH = path.join(TEST_PATH, 'test-osx'),
     TEST_OSX_REG = /osx/;
 
 describe('Pack Dir', () => {
@@ -124,15 +125,29 @@ describe('Pack Dir', () => {
         }
     });
 
-    // Cleanup
-    fs.readdir(TEST_PATH, (err, files) => {
+    it('cleans up all test data', () => {
+        let files = fs.readdirSync(TEST_PATH),
+            removedFilesCount = 0;
         if (files && files.length) {
             files.forEach(file => {
                 if (file.endsWith(Pack.DMG) || file.endsWith(Pack.ZIP)) {
-                    fs.unlinkSync(TEST_PATH + '/' + file);
+                    try {
+                        fs.unlinkSync(path.join(TEST_PATH, file));
+                        removedFilesCount++;
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }
             });
         }
-    });
 
+        try {
+            fs.unlinkSync(path.join(TEST_DIR_PATH + Pack.ZIP));
+            removedFilesCount++;
+        } catch (e) {
+            console.error(e);
+        }
+
+        expect(removedFilesCount).toBeGreaterThan(0);
+    });
 });

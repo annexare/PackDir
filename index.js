@@ -4,7 +4,9 @@ const
     FS = require('fs'),
     Path = require('path'),
     isOSX = (process.platform === 'darwin'),
-    isWindows = (process.platform === 'win32');
+    isWindows = (process.platform === 'win32'),
+    ZIP_DIR = '7z',
+    ZIP_EXE = '7za.exe';
 
 let unset;
 
@@ -138,11 +140,11 @@ class PackDir {
     }
 
     getZipPath() {
-        return Path.normalize(__dirname + '/zip/zip.exe');
+        return Path.normalize(Path.join(__dirname, ZIP_DIR, ZIP_EXE));
     }
 
     getUnZipPath() {
-        return Path.normalize(__dirname + '/zip/unzip.exe');
+        return Path.normalize(Path.join(__dirname, ZIP_DIR, ZIP_EXE));
     }
 
     log(message) {
@@ -169,19 +171,25 @@ class PackDir {
     unzip(path, destination, callback) {
         let pathInfo = Path.parse(path),
             extractWhat = this.escapeArg(path),
-            extractTo = this.escapeArg(destination || pathInfo.dir),
-            args = [
-                '-o',
-                extractWhat,
-                '-d',
-                extractTo
-            ];
+            extractTo = this.escapeArg(destination || pathInfo.dir);
 
         if (isWindows) {
-            // Within Electron + ASAR, we can only use `execFile()` for bundled zip.exe
+            let args = [
+                'x',
+                extractWhat,
+                '-o' + extractTo,
+                '-r'
+            ];
+            // Within Electron + ASAR, we can only use `execFile()` for bundled exe
             this.execFile(this.getUnZipPath(), args, unset, callback || unset);
         } else {
-            let cmd = 'unzip ' + args.join(' ');
+            let args = [
+                    '-o',
+                    extractWhat,
+                    '-d',
+                    extractTo
+                ],
+                cmd = 'unzip ' + args.join(' ');
             this.exec(cmd, unset, callback || unset);
         }
 
@@ -209,16 +217,17 @@ class PackDir {
         }
 
         let args = [
-            '-r',
             this.escapeArg(pathToZipFile),
             this.escapeArg(pathWithMask)
         ];
 
         if (isWindows) {
-            args.unshift('-S');
+            args.unshift('a', '-tzip');
             // Within Electron + ASAR, we can only use `execFile()` for bundled zip.exe
             this.execFile(this.getZipPath(), args, params, callback || unset);
         } else {
+            args.unshift('-r');
+
             let cmd = 'zip ' + args.join(' ');
             this.exec(cmd, params, callback || unset);
         }

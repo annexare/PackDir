@@ -1,6 +1,6 @@
 {
     "name": "pack-dir",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "Pack/unpack specified directory with native current OS command line tools.",
     "keywords": [
         "pack",
@@ -11,6 +11,8 @@
         "zip",
         "unzip",
         "archive",
+        "7z",
+        "7zip",
         "Annexare"
     ],
     "main": "index.js",
@@ -42,9 +44,6 @@
         "collectCoverageOnlyFrom": {
             "index.js": true
         },
-        "testDirectoryName": "tests",
-        "testPathDirs": [
-            "."
-        ]
+        "testRegex": "(/tests/.*|\\.(test|spec))\\.js$"
     }
 }
