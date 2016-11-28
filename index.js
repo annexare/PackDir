@@ -10,7 +10,6 @@ const
 
 let unset;
 
-
 class PackDir {
     constructor() {
         this.params = {
