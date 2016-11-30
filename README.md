@@ -40,6 +40,7 @@ let zipPath = Pack.path('some/test/dir', (error, stdout, stderr) => {
 * `isSilent` `boolean`, `false`, will write only Errors to console.
 * `isSync` `boolean`, `true`, synchronous packaging.
 * `skipDirName` `boolean`, `true`, don't create extra directory inside ZIP archive.
+* `zipOutputMaxBuffer` `int`, `1024 * 200`.
 
 ## Credits
 
