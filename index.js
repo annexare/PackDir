@@ -17,7 +17,8 @@ class PackDir {
             dmgFormat: 'UDZO',
             isSilent: false,
             isSync: true,
-            skipDirName: true
+            skipDirName: true,
+            zipOutputMaxBuffer: 1024 * 200
         };
 
         this.DMG = '.dmg';
@@ -181,7 +182,7 @@ class PackDir {
                 '-r'
             ];
             // Within Electron + ASAR, we can only use `execFile()` for bundled exe
-            this.execFile(this.getUnZipPath(), args, unset, callback || unset);
+            this.execFile(this.getUnZipPath(), args, {maxBuffer: this.params.zipOutputMaxBuffer}, callback || unset);
         } else {
             let args = [
                     '-o',
@@ -190,7 +191,7 @@ class PackDir {
                     extractTo
                 ],
                 cmd = 'unzip ' + args.join(' ');
-            this.exec(cmd, unset, callback || unset);
+            this.exec(cmd, {maxBuffer: this.params.zipOutputMaxBuffer}, callback || unset);
         }
 
         return extractTo;
@@ -212,6 +213,7 @@ class PackDir {
 
         if (this.params.skipDirName && pathStat.isDirectory()) {
             params.cwd = path;
+            params.maxBuffer = this.params.zipOutputMaxBuffer;
             pathWithMask = '*';
             pathToZipFile = Path.join('..', pathToZipFile);
         }
